@@ -1,0 +1,96 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://unpkg.com/obniz@3.x/obniz.js" crossorigin="anonymous"></script>
+    <!--icon-->
+    <script src="https://kit.fontawesome.com/9d315c3184.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="obniz-debug"></div>
+
+    <div id="background">
+        <!--status&icons-->
+        <div style="font-size:100px;margin:50px;text-align:center">
+            <i id="status-icon">
+      </div>
+
+      <div style="font-size:50px;margin:50px;text-align:center">
+        <div id="status"></div>
+      </div>
+    </div>
+
+    <!--recording-->
+    <div style="font-size:20px;margin:50px;text-align:center">
+      <div id="record"></div>
+    </div>
+
+
+
+    <script>
+      var obniz = new Obniz("OBNIZ_ID_HERE");
+
+      obniz.onconnect = async function() {
+        var servo = obniz.wired("ServoMotor", { gnd: 0, vcc: 1, signal: 2 });
+        var sensor = obniz.wired("HC-SR505", {vcc:10, signal:9, gnd:11});
+          sensor.onchange = async val => {
+            
+            console.log(val ? 'Moving Something!' : 'Nothing moving');
+
+            if (val){
+              
+              $("#status").text("猫が近づいた。餌を出しますね");  
+              $("#status").attr("style", "color:#111b88");
+              $("#status-icon").attr("class", "fas fa-cat fa-bounce");
+              $("#status-icon").attr("style", "color:#111b88");
+              await obniz.wait(500);
+
+              //one time
+              let angle_list = [0, 90,0,90,0];
+              for (let i = 0; i < angle_list.length; i++) {
+                servo.angle(angle_list[i]);
+                await obniz.wait(1000);
+
+                $("#status").text("餌を出しています");
+                $("#status").attr("style", "color:#4dbb11");
+                $("#status-icon").attr("class", "fas fa-bowl-food fa-fade");
+                $("#status-icon").attr("style", "color:#4dbb11");
+
+              }
+
+              
+                $("#status").text("餌を出しました");
+                $("#status").attr("style", "color:#172035");
+                $("#status-icon").attr("class", "fas fa-stop");
+                $("#status-icon").attr("style", "color:#172035");
+
+                //recording
+                var datetime = new Date().toLocaleString('ja-JP');
+                obniz.display.drawing(false);
+                obniz.display.clear();
+                obniz.display.print(datetime[0]);
+                obniz.display.print(datetime[1]);
+                obniz.display.drawing(true);
+                $('#record').append(`<p>給食時間：${new Date().toLocaleString('ja-JP')}</p>`);
+            }
+        };
+      };
+      
+    </script>
+
+
+    <style>
+      #background {
+        margin: 2em auto;
+        padding:2em;/*内側余白*/
+        border-radius: 30px 60px/60px 30px;
+        border: solid 8px #ccc7be;
+      }
+
+    </style>
+  </body>
+</html>
