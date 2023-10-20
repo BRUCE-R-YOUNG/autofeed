@@ -14,9 +14,8 @@
 <body>
     <div id="obniz-debug"></div>
 
-
     <div id="feed-buttons" class="text-center" style="margin-top:30px">
-      <button id="feed" type="button" class="btn btn-primary">餌を出す</button>
+        <button id="feed" type="button" class="btn btn-primary">餌を出す</button>
     </div>
 
     <div id="background">
@@ -36,25 +35,22 @@
     </div>
 
     <script>
-
         var obniz = new Obniz("OBNIZ_ID_HERE");
 
         obniz.onconnect = async function() {
             var servo = obniz.wired("ServoMotor", { gnd: 0, vcc: 1, signal: 2 });
             var sensor = obniz.wired("HC-SR505", { vcc: 10, signal: 9, gnd: 11 });
-            sensor.onchange = async val => {
 
+            sensor.onchange = async val => {
                 console.log(val ? 'Moving Something!' : 'Nothing moving');
 
                 if (val) {
-
                     $("#status").text("猫が近づいた。\n餌を出しますね");
                     $("#status").attr("style", "color:#111b88");
                     $("#status-icon").attr("class", "fas fa-cat fa-bounce");
                     $("#status-icon").attr("style", "color:#111b88");
                     await obniz.wait(500);
 
-                    //one time
                     let angle_list = [0, 90, 0, 90, 0];
                     for (let i = 0; i < angle_list.length; i++) {
                         servo.angle(angle_list[i]);
@@ -64,16 +60,13 @@
                         $("#status").attr("style", "color:#4dbb11");
                         $("#status-icon").attr("class", "fas fa-bowl-food fa-fade");
                         $("#status-icon").attr("style", "color:#4dbb11");
-
                     }
-
 
                     $("#status").text("餌を出しました");
                     $("#status").attr("style", "color:#172035");
                     $("#status-icon").attr("class", "fas fa-stop");
                     $("#status-icon").attr("style", "color:#172035");
 
-                    //recording
                     var datetime = new Date().toLocaleString('ja-JP');
                     obniz.display.drawing(false);
                     obniz.display.clear();
@@ -81,48 +74,42 @@
                     obniz.display.print(datetime[1]);
                     obniz.display.drawing(true);
                     $('#record').append(`<p>給食時間：${new Date().toLocaleString('ja-JP')}</p>`);
-    
+
                 }
             };
 
-          $("#feed").click(async function() {
+            $("#feed").click(async function() {
+                $("#status").text("餌を出しますね");
+                $("#status").attr("style", "color:#111b88");
+                $("#status-icon").attr("class", "fas fa-cat fa-bounce");
+                $("#status-icon").attr("style", "color:#111b88");
+                await obniz.wait(500);
 
-            $("#status").text("猫が近づいた。餌を出しますね");
-            $("#status").attr("style", "color:#111b88");
-            $("#status-icon").attr("class", "fas fa-cat fa-bounce");
-            $("#status-icon").attr("style", "color:#111b88");
-            await obniz.wait(500);
+                let angle_list = [0, 90, 0, 90, 0];
+                for (let i = 0; i < angle_list.length; i++) {
+                    servo.angle(angle_list[i]);
+                    await obniz.wait(1000);
 
-            //one time
-            let angle_list = [0, 90, 0, 90, 0];
-            for (let i = 0; i < angle_list.length; i++) {
-                servo.angle(angle_list[i]);
-                await obniz.wait(1000);
+                    $("#status").text("餌を出しています");
+                    $("#status").attr("style", "color:#4dbb11");
+                    $("#status-icon").attr("class", "fas fa-bowl-food fa-fade");
+                    $("#status-icon").attr("style", "color:#4dbb11");
+                }
 
-                $("#status").text("餌を出しています");
-                $("#status").attr("style", "color:#4dbb11");
-                $("#status-icon").attr("class", "fas fa-bowl-food fa-fade");
-                $("#status-icon").attr("style", "color:#4dbb11");
+                $("#status").text("餌を出しました");
+                $("#status").attr("style", "color:#172035");
+                $("#status-icon").attr("class", "fas fa-stop");
+                $("#status-icon").attr("style", "color:#172035");
 
-            }
-
-
-            $("#status").text("餌を出しました");
-            $("#status").attr("style", "color:#172035");
-            $("#status-icon").attr("class", "fas fa-stop");
-            $("#status-icon").attr("style", "color:#172035");
-
-            //recording
-            var datetime = new Date().toLocaleString('ja-JP');
-            obniz.display.drawing(false);
-            obniz.display.clear();
-            obniz.display.print(datetime[0]);
-            obniz.display.print(datetime[1]);
-            obniz.display.drawing(true);
-            $('#record').append(`<p>給食時間：${new Date().toLocaleString('ja-JP')}</p>`);
-          });
+                var datetime = new Date().toLocaleString('ja-JP');
+                obniz.display.drawing(false);
+                obniz.display.clear();
+                obniz.display.print(datetime[0]);
+                obniz.display.print(datetime[1]);
+                obniz.display.drawing(true);
+                $('#record').append(`<p>給食時間：${new Date().toLocaleString('ja-JP')}</p>`);
+            });
         };
-
     </script>
 
     <style>
@@ -131,10 +118,8 @@
             padding: 2em;
             border-radius: 20px;
             border: solid 8px #ccc7be;
-            font-size:2em;
+            font-size: 2em;
         }
-
-
     </style>
 </body>
 
